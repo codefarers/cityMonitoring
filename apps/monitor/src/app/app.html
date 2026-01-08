@@ -1,9 +1,20 @@
-<div>
-  <h3 class="p-6 text-primary">City monitoring</h3>
-  <input placeholder="Search City">
-  <div>
-    <p>Weather</p>
-    <p>Traffic</p>
+<div class="py-2 bg-light">
+  <div class=" container w-25 d-flex w-100 align-items-center justify-content-between">
+    <h3 class="w-25 p-6 text-secondary">CMonitor</h3>
+    <div class="position-relative">
+      <input [formControl]="searchCityControl" class="form-control w-100" placeholder="Search City">
+      @if (cityNameResults().length>0 && !countrySelected()){
+          <div class="rounded border p-3 bg-white position-absolute top-25">
+            @for (city of cityNameResults(); track city.lat){
+            <button (click)="selectCityToSearch(city.lat)" class="py-1 pointer text-muted border-0 bg-white">{{city.name}}, {{city.countryCode}}</button>
+            }
+          </div>
+        }
+    </div>
+    <ul class="d-flex m-0 gap-2 ps-2 w-25 list-unstyled">
+      <li>Weather</li>
+      <li>Traffic</li>
+    </ul>
   </div>
 </div>
 

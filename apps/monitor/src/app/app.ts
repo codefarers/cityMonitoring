@@ -1,9 +1,10 @@
-import { Component, inject, signal, OnInit, DestroyRef } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { ListCitynames } from './services/cityNames/list-citynames';
 import { debounceTime, distinctUntilChanged, of, startWith, switchMap, iif, tap, map } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { StoreModule } from '@ngrx/store';
 
 export interface CityDetails {
   country: string;
@@ -27,7 +28,6 @@ export interface City {
 })
 export class App implements OnInit {
   private getCityNames = inject(ListCitynames);
-  private destroyRef$ = inject(DestroyRef);
 
   private loading = signal<boolean>(false);
   countrySelected = signal<boolean>(false);
@@ -68,7 +68,7 @@ export class App implements OnInit {
             );
           }),
           tap({ complete: () => this.loading.set(false) }),
-          takeUntilDestroyed(this.destroyRef$)
+          takeUntilDestroyed()
         )
         .subscribe({
           next: (value) => {

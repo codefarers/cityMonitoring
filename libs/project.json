@@ -1,0 +1,41 @@
+{
+  "name": "libs",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "libs/src",
+  "prefix": "lib",
+  "targets": {
+    "build": {
+      "executor": "@angular/build:ng-packagr",
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@angular/build:karma",
+      "options": {
+        "tsConfig": "libs/tsconfig.spec.json",
+        "polyfills": [
+          "zone.js",
+          "zone.js/testing"
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@angular-eslint/builder:lint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/**/*.ts",
+          "libs/**/*.html"
+        ],
+        "eslintConfig": "libs/eslint.config.mjs"
+      }
+    }
+  }
+}

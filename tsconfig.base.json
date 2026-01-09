@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@monitor/keys": ["libs/monitor-keys/index.ts"]
+      "@monitor/components": ["libs/cards-monitor/components/index.ts"],
+      "@monitor/keys": ["libs/monitor-keys/index.ts"],
     }
   },
   "exclude": ["node_modules", "tmp"]

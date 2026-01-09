@@ -33,7 +33,7 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
-libs/monitor-keys/*
+tremove/monitor-keys/*
 
 # System Files
 .DS_Store

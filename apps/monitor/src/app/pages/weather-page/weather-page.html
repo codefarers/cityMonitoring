@@ -1,11 +1,68 @@
+@if(weatherAndAirQuality$ | async; as cityData){
 <div class="container">
   <div class="d-flex align-items-center gap-2 mt-3">
-    <h1 class="m-0 fw-bold">Nairobi</h1>
-    <h4 class="text-muted m-0">KE</h4>
+    <h1 class="m-0 fw-bold text-uppercase">
+      {{ cityData.weather?.response[0]?.place?.name }}
+    </h1>
+    <h4 class="text-muted m-0 text-uppercase">
+      {{ cityData.weather?.response[0]?.place?.country }}
+    </h4>
   </div>
   <div class="d-flex text-muted gap-1">
     <i class="bi bi-clock-fill"></i>
-    <p>{{currentTime() | date:'HH:mm:ss'}}</p>
+    <p>{{time$ | async | date:'HH:mm:ss'}}</p>
   </div>
-  <lib-monitor-weather-card></lib-monitor-weather-card>
+  <div class="row gap-2">
+    <div class="border p-2 col-sm-6">
+      <div>
+        <p>Weather</p>
+        <h3>{{cityData.weather?.response[0]?.periods[0]?.tempC}}</h3>
+        <p>{{cityData.weather?.response[0]?.periods[0]?.weatherType}}</p>
+      </div>
+      <div>
+        <p>
+          feels like: {{cityData.weather?.response[0]?.periods[0]?.feelsLike}}
+        </p>
+        <p>
+          wind speed:
+          {{cityData.weather?.response[0]?.periods[0]?.windSpeedKPH}}
+        </p>
+        <p>snow level: {{cityData.weather?.response[0]?.periods[0]?.snowCM}}</p>
+        <p>dewPoint: {{cityData.weather?.response[0]?.periods[0]?.dewPoint}}</p>
+        <p>is Day: {{cityData.weather?.response[0]?.periods[0]?.isDay}}</p>
+        <p>sky: {{cityData.weather?.response[0]?.periods[0]?.sky}}</p>
+        <p>
+          visibility: {{cityData.weather?.response[0]?.periods[0]?.visibility}}
+        </p>
+      </div>
+    </div>
+    <div class="border p-2 col-sm-6">
+      <div>
+        <p>Air Quality</p>
+        <h3>{{cityData.weather?.response[0]?.periods[0]?.tempC}}</h3>
+        <p>{{cityData.weather?.response[0]?.periods[0]?.weatherType}}</p>
+      </div>
+      <div class="gap-2">
+        <p>
+          longitude: {{cityData.airQuality?.response[0]?.loc?.long}}
+        </p>
+        <p>latitude: {{cityData.airQuality?.response[0]?.loc?.lat}</p>
+        <div>
+          <p>Air Quality: {{cityData.airQuality?.response[0]?.periods[0]?.aqi}}</p>
+        </div>
+        @for (quality of cityData.airQuality?.response[0]?.periods[0]?.pollutants; track quality.type){
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title">pollutant name: {{quality.name}}</h3>
+              <h4 class="subtitle">Pollutant type: {{quality.type}}</h4>
+              <p class="card-text">Value: {{quality.value}}</p>
+              <p class="card-text">aqi: {{quality.aqi}}</p>
+              <p class="card-text">category: {{quality.category}}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
 </div>
+}

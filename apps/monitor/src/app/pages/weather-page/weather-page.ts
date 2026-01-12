@@ -1,23 +1,60 @@
-import { Component } from '@angular/core';
-import { MonitorWeatherCard } from '@monitor/components';
-import { DatePipe } from '@angular/common';
-import { interval, map, Observable, startWith } from 'rxjs';
+import { Component, inject, DestroyRef } from '@angular/core';
+import { DatePipe, AsyncPipe } from '@angular/common';
+import {
+  interval,
+  map,
+  startWith,
+  forkJoin,
+  switchMap,
+  filter
+} from 'rxjs';
 import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Store } from '@ngrx/store';
+import { selectToMonitor } from '../../../../../../store/selected-city/selected-city.selector';
+import { ListCitynames } from '../../services/cityNames/list-citynames';
 
 @Component({
   selector: 'app-weather-page',
-  imports: [MonitorWeatherCard, DatePipe],
+  imports: [DatePipe, AsyncPipe],
   templateUrl: './weather-page.html',
   styles: ``,
 })
 export class WeatherPage {
-  timeNow = new Date();
+  private store = inject(Store);
+  private cityService = inject(ListCitynames);
+  destroyRef$ = inject(DestroyRef);
 
-  time$: Observable<Date> = interval(1000).pipe(
-    startWith(''),
-    map(() => new Date()),
-    takeUntilDestroyed()
+  cityName$ = this.store.select(selectToMonitor);
+
+  weatherAndAirQuality$ = this.cityName$.pipe(
+    filter((cityName) => cityName !== null),
+    switchMap((cityName) =>
+      forkJoin({
+        airQuality: this.cityService.getCityAirQuality(cityName),
+        weather: this.cityService.getCityWeatherData(cityName),
+      })
+    ),
+    takeUntilDestroyed(this.destroyRef$)
   );
 
-  readonly currentTime = toSignal(this.time$);
+  time$ = this.weatherAndAirQuality$
+    .pipe(
+      map(({ weather }) => weather?.response[0]?.periods[0]?.timestamp),
+      switchMap((baseTime) =>
+        interval(1000).pipe(
+          startWith(0),
+          map((tick) => new Date((baseTime + tick)*1000))
+        )
+      ),
+      takeUntilDestroyed(this.destroyRef$)
+    )
+
+  airQualityData$ = this.weatherAndAirQuality$.pipe(
+    map(({ airQuality }) => ({
+      aqi: airQuality?.response[0]?.periods[0]?.aqi,
+      category: airQuality?.response[0]?.periods[0]?.category,
+      color: airQuality?.response[0]?.periods[0]?.color,
+      pollutants: airQuality?.response[0]?.periods[0]?.pollutants,
+    }))
+  );
 }

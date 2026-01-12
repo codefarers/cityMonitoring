@@ -1,7 +1,7 @@
-export interface monitoredCity {
-  cityName: string;
+export interface monitorState {
+  cityName: string | null;
 }
 
-export const initialCityValue: monitoredCity = {
-  cityName: '',
+export const initialCityValue: monitorState = {
+  cityName: null,
 };
